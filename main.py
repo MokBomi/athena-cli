@@ -7,7 +7,7 @@ import ssl
 import warnings
 import urllib3
 from random import choice
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
@@ -26,17 +26,9 @@ favorite_questions = []
 session = requests.Session()
 
 # Flask routes
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
-    return render_template('index.html')
-
-@app.route('/study_mode')
-def study_mode():
-    return render_template('html/study_mode.html')
-
-@app.route('/quiz_mode')
-def quiz_mode():
-    return render_template('html/quiz_mode.html')
+    return {"status": "success", "message": "Your application is running. Use /startScraping endpoint to start scraping."}
 
 @app.route('/startScraping', methods=['POST'])
 def start_scraping():
@@ -205,7 +197,7 @@ def process_question(base_url, url_number, question_counter):
                     name = f'q{question_counter}_option{option_name}_1.png'
                     folder_path = os.path.join('./static/assets/images/background', img_type_directory["option"])
                                 
-                    placeholder = f'<img src="../static/assets/images/background/Option/{name}" alt="{name}" style="display: inline-block; width: auto; height: auto;">'
+                    placeholder = f'<img src="/static/assets/images/background/Option/{name}" alt="{name}" style="display: inline-block; width: auto; height: auto;">'
                     flex_wrap_div = BeautifulSoup(flex_wrap_div.decode().replace(str(img_option), placeholder), 'html.parser')
 
                     download_image(img_url, folder_path, name)
@@ -240,3 +232,4 @@ if __name__ == "__main__":
             favorite_questions = json.load(f)
     except FileNotFoundError:
         favorite_questions = []
+    app.run(debug=True)

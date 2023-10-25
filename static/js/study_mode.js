@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   document.getElementById('confirm-yes').addEventListener('click', handleYesButtonClick);
   document.getElementById('confirm-no').addEventListener('click', closeConfirmationModal);
 
-  fetch('http://localhost:8000/getUrls')
+  fetch('http://localhost:5000/getUrls')
     .then(response => response.json())
     .then(data => {
       const urlsArea = document.getElementById("multiple-urls");
@@ -165,13 +165,13 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
         let withinPattern = /\(image\)q(\d+)_within_(\d+)\(image\)/gi;
         questionText = questionText.replace(withinPattern, (match, p1, p2) => {
             let imageName = `q${p1}_within_${p2}.png`;
-            return `<img src="../static/assets/images/background/Within/${imageName}" alt="${imageName}" style="display: inline-block; width: auto; height: auto;">`;
+            return `<img src="/static/assets/images/background/Within/${imageName}" alt="${imageName}" style="display: inline-block; width: auto; height: auto;">`;
         });
 
         let afterPattern = /\(image\)q(\d+)_after_(\d+)\(image\)/gi;
         questionText = questionText.replace(afterPattern, (match, p1, p2) => {
             let imageName = `q${p1}_after_${p2}.png`;
-            return `<br><img src="../static/assets/images/background/After/${imageName}" alt="${imageName}" style="display: block; margin-left: auto; margin-right: auto; width: auto; height: auto;">`;
+            return `<br><img src="/static/assets/images/background/After/${imageName}" alt="${imageName}" style="display: block; margin-left: auto; margin-right: auto; width: auto; height: auto;">`;
         });
 
         questionTextElement.innerHTML = questionText;
@@ -192,9 +192,9 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
 
         let starButton = document.getElementById("star-button");
         if (favoriteQuestions.findIndex(question => question.id.toString() === questions[questionIndex].id.toString()) >= 0) {  
-            starButton.src = "../static/assets/images/icons/star_yellow.png";
+            starButton.src = "/static/assets/images/icons/star_yellow.png";
         } else {
-            starButton.src = "../static/assets/images/icons/star_black.png";
+            starButton.src = "/static/assets/images/icons/star_black.png";
         }
 
         const currentQuestionID = questions[currentQuestionIndex].id;
@@ -222,7 +222,7 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
 
 // Data Handling
 async function getQuestions() {
-    let response = await fetch('http://localhost:8000/getQuestions');
+    let response = await fetch('http://localhost:5000/getQuestions');
     let data = await response.json();
     allQuestions = data;
     let savedFavorites = localStorage.getItem('favoriteQuestions');
@@ -239,7 +239,7 @@ async function getQuestions() {
 }
 
 async function getFavorites() {
-    const response = await fetch('http://localhost:8000/getFavorites');
+    const response = await fetch('http://localhost:5000/getFavorites');
     const favoriteIds = await response.json();
     questions = questions.filter((question, index) => favoriteIds.includes(question.id.toString()));
 
@@ -276,7 +276,7 @@ function startScraping(event) {
     const progress = document.getElementById("processing-section");
     progress.textContent = "Starting scraping...";
 
-    fetch('http://localhost:8000/startScraping', {
+    fetch('http://localhost:5000/startScraping', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ urls })
@@ -302,16 +302,16 @@ function toggleFavorites() {
     let isFavorite = favoriteQuestions.find(question => question.id.toString() === currentQuestionIdString);
 
     if (isFavorite) {
-        starButton.src = "../static/assets/images/icons/star_black.png";
+        starButton.src = "/static/assets/images/icons/star_black.png";
         favoriteQuestions = favoriteQuestions.filter(question => question.id.toString() !== currentQuestionIdString);
     } else {
-        starButton.src = "../static/assets/images/icons/star_yellow.png";
+        starButton.src = "/static/assets/images/icons/star_yellow.png";
         favoriteQuestions.push(questions[currentQuestionIndex]);
     }
 
     localStorage.setItem('favoriteQuestions', JSON.stringify(favoriteQuestions));
 
-    fetch('http://localhost:8000/toggleFavorite', {
+    fetch('http://localhost:5000/toggleFavorite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 'question_id': currentQuestionIdString, 'favorite_status': !isFavorite })
@@ -400,7 +400,7 @@ function openSearch() {
     document.getElementById('search-input').placeholder = "Search for questions";
     
     let newDiv = document.createElement('div');
-    newDiv.innerHTML = '<img src="../static/assets/images/icons/search_icon.png" alt="search icon">';
+    newDiv.innerHTML = '<img src="/static/assets/images/icons/search_icon.png" alt="search icon">';
     document.getElementById('search-modal-content').insertBefore(newDiv, document.getElementById('search-input'));
 }
 
@@ -440,7 +440,7 @@ function searchQuestions() {
             div.appendChild(divText);
 
             let img = document.createElement('img');
-            img.src = favoriteQuestions.includes(questions[i].id.toString()) ? "../static/assets/images/icons/star_yellow.png" : "../static/assets/images/icons/star_black.png";
+            img.src = favoriteQuestions.includes(questions[i].id.toString()) ? "/static/assets/images/icons/star_yellow.png" : "/static/assets/images/icons/star_black.png";
             img.classList.add('star-icon');
             div.appendChild(img);
 

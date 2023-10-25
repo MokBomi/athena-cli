@@ -3,9 +3,9 @@
 
 <head>
     <title>Study Mode</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/study_mode.css') }}">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/images/icons/logo.png') }}">
-    <script src="{{ url_for('static', filename='js/study_mode.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/study_mode.css">
+    <link rel="icon" type="image/png" href="/static/assets/images/icons/logo.png">
+    <script src='/static/js/study_mode.js'></script>
 </head>
 
 <body>
@@ -16,8 +16,8 @@
             <!-- Left Part with back button -->
             <div class="left-part">
                 <div id="left-section">
-                    <img id="back-button" src="../static/assets/images/icons/back.png" alt="Go back" title="Go Back" onclick="window.location.href='{{ url_for('home') }}'" style="cursor: pointer;">
-                    <img id="reset-button" src="../static/assets/images/icons/reset.png" alt="Reset" title="Reset Questions" onclick="resetButtonClick()" style="cursor: pointer;" class="icon-wrap">
+                    <img id="back-button" src="/static/assets/images/icons/back.png" alt="Go back" title="Go Back" onclick="window.location.href='/index.html'" style="cursor: pointer;">
+                    <img id="reset-button" src="/static/assets/images/icons/reset.png" alt="Reset" title="Reset Questions" onclick="resetButtonClick()" style="cursor: pointer;" class="icon-wrap">
                 </div>
             </div>
 
@@ -36,9 +36,9 @@
                         <option>All Questions</option>
                         <option>Favorites</option>
                     </select>
-                    <img id="star-button" src="../static/assets/images/icons/star_black.png" alt="Add to Favorites" title="Add to Favorites" onclick="toggleFavorites()" style="cursor: pointer;" class="icon-wrap">
-                    <img id="shuffle-button" src="../static/assets/images/icons/shuffle.png" alt="Shuffle" title="Shuffle Questions" onclick="shuffleQuestions()" style="cursor: pointer;" class="icon-wrap">
-                    <img id="search-button" src="../static/assets/images/icons/search.png" alt="Search" title="Search Questions" onclick="openSearch()" style="cursor: pointer;" class="search-wrap">
+                    <img id="star-button" src="/static/assets/images/icons/star_black.png" alt="Add to Favorites" title="Add to Favorites" onclick="toggleFavorites()" style="cursor: pointer;" class="icon-wrap">
+                    <img id="shuffle-button" src="/static/assets/images/icons/shuffle.png" alt="Shuffle" title="Shuffle Questions" onclick="shuffleQuestions()" style="cursor: pointer;" class="icon-wrap">
+                    <img id="search-button" src="/static/assets/images/icons/search.png" alt="Search" title="Search Questions" onclick="openSearch()" style="cursor: pointer;" class="search-wrap">
                 </div>
             </div>
         </div>
@@ -70,7 +70,7 @@
             <!-- Controls Container for navigating questions -->
             <div class="controls-container">
                 <div class="prev-container">
-                    <img id="prev-img-button" src="../static/assets/images/icons/previous.png" alt="Previous Question" onclick="prevQuestion()" width="40px" height="40px" style="cursor: pointer;" class="icon-wrap">
+                    <img id="prev-img-button" src="/static/assets/images/icons/previous.png" alt="Previous Question" onclick="prevQuestion()" width="40px" height="40px" style="cursor: pointer;" class="icon-wrap">
                 </div>
                 <div class="flip-card-container" id="flip-card">
                     <div class="flip-card-side flip-card-front">
@@ -81,7 +81,7 @@
                     </div>
                 </div>
                 <div class="next-container">
-                    <img id="next-img-button" src="../static/assets/images/icons/next.png" alt="Next Question" onclick="nextQuestion()" width="40px" height="40px" style="cursor: pointer;" class="icon-wrap">
+                    <img id="next-img-button" src="/static/assets/images/icons/next.png" alt="Next Question" onclick="nextQuestion()" width="40px" height="40px" style="cursor: pointer;" class="icon-wrap">
                 </div>
             </div>
         </div>
