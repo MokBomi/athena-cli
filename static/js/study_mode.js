@@ -180,6 +180,14 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
         for (let i = 1; i <= 4; i++) {
             let optionText = question.options[i-1] || '';
             optionText = optionText.replace(/<div class="flex-wrap">|<\/div>/g, '');
+
+            // New code to replace multiple image placeholders
+            let optionImgPattern = new RegExp('<img src="\\/static\\/assets\\/images\\/background\\/Option\\/q' + (questionIndex + 1) + '_option' + String.fromCharCode(64 + i) + '_(\\d+).png" alt="q' + (questionIndex + 1) + '_option' + String.fromCharCode(64 + i) + '_\\d+.png" style="display: inline-block; width: auto; height: auto;">', 'gi');
+            optionText = optionText.replace(optionImgPattern, (match, p1) => {
+                let imageName = 'q' + (questionIndex + 1) + '_option' + String.fromCharCode(64 + i) + '_' + p1 + '.png';
+                return `<img src="/static/assets/images/background/Option/${imageName}" alt="${imageName}" style="display: inline-block; width: auto; height: auto;">`;
+            });
+
             let optionTxt = optionText.replace(/^[A-D]\./, '');
             document.getElementById(`option${String.fromCharCode(64 + i)}`)
                 .querySelector('.option-text')
