@@ -2,7 +2,7 @@
 
 Athena is a Quiz Web Application that automates the process of fetching questions from IndiaBIX, saving users valuable time. This web app allows users to input multiple URLs to answer questions in bulk.
 
-## ⚠️ Note: Memory Considerations and Usage Recommendations
+## ⚠️ Note: Compatibility and System Considerations
 
 Please be aware that athena-cli might encounter compatibility issues on certain systems. While it allows for the processing of multiple URLs, it's crucial to ensure compatibility with your system before running multiple URLs. If athena-cli encounters compatibility issues, you might consider using the [athena-docker](https://github.com/MokBomi/athena-docker) version. However, please be aware that the [athena-docker](https://github.com/MokBomi/athena-docker) may not be compatible with all systems due to Docker's limited memory allocation and other constraints.
 
