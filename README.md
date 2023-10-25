@@ -1,29 +1,44 @@
-# athena-docker
+# athena-cli
 
-Athena is a Quiz Web Application that automates the process of fetching questions from IndiaBIX, saving users valuable time. This web app allows users to input multiple URLs to answer questions in bulk. This version of the web app is designed for running within a Docker environment.
+Athena is a Quiz Web Application that automates the process of fetching questions from IndiaBIX, saving users valuable time. This web app allows users to input multiple URLs to answer questions in bulk.
 
 ## ⚠️ Note: Memory Considerations and Usage Recommendations
 
-Please be aware that although this Docker version of the repository is designed to work on most computers, Docker has a default memory allocation that can be insufficient for data-intensive tasks. Therefore, it is recommended to run this for a maximum of 1 URL initially. Increasing the memory allocation in the Docker application settings might allow for processing of up to 3 URLs, but it's crucial to experiment cautiously. Please note that a safety net of 1 or 2 URLs is recommended. If you intend to process a larger number of URLs, you might consider using the athena-cli. However, please be aware that the athena-cli may not be compatible with all systems.
+Please be aware that athena-cli might encounter compatibility issues on certain systems. While it allows for the processing of multiple URLs, it's crucial to ensure compatibility with your system before running multiple URLs. If athena-cli encounters compatibility issues, you might consider using the athena-docker version. However, please be aware that the athena-docker may not be compatible with all systems due to Docker's limited memory allocation and other constraints.
 
 ## :pushpin: Instructions
 
-### Step 1: Install Docker
+### Step 1: Clone and Run
 
-Visit the [Docker website](https://www.docker.com/get-docker/) and follow the guidelines particular to your OS for installing Docker. If your operating system version does not support Docker Desktop, you may consider using [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install/) instead.
-
-### Step 2: Clone and Run
-
-After installing Docker, execute the following commands in your terminal:
+First, clone the repository and navigate to the project directory:
 
 ```bash
-git clone https://github.com/MokBomi/athena-docker.git
-cd athena-docker
-docker build -t quiz-app .
-docker run -p 8000:8000 quiz-app
+git clone <repository_URL>
+cd athena-cli
 ```
 
-### Step 3: Input URLs
+### Step 2: Install Dependencies
+
+Next, install the required dependencies using the following command:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3: Run Athena-CLI and Initiate Local Server
+
+Open a terminal or command prompt window, navigate to the athena-cli directory, and run the following command to start Athena-CLI:
+
+```bash
+python main.py
+```
+
+Next, open another terminal or command prompt and initiate a local server using the following command:
+
+```bash
+python -m http.server 8000
+```
+### Step 4: Input URLs
 
 Make sure to input URLs in the following format: **`[base_url]`**, **`[start_url]`**, **`[end_url]`**. For example, if you have Section 1 of the topic Networks Analysis and Synthesis under Electronics and Communication Engineering, you'll have this link:
 
