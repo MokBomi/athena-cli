@@ -189,19 +189,22 @@ def process_question(base_url, url_number, question_counter):
                 if not flex_wrap_div:
                     options.append('Option not found')
                     continue
-                            
-                img_option = flex_wrap_div.find('img')
-                if img_option:
-                    img_url = urljoin(url, img_option['src'])
-                    option_name = chr(ord('A') + i)
-                    name = f'q{question_counter}_option{option_name}_1.png'
-                    folder_path = os.path.join('./static/assets/images/background', img_type_directory["option"])
-                                
-                    placeholder = f'<img src="/static/assets/images/background/Option/{name}" alt="{name}" style="display: inline-block; width: auto; height: auto;">'
-                    flex_wrap_div = BeautifulSoup(flex_wrap_div.decode().replace(str(img_option), placeholder), 'html.parser')
-
-                    download_image(img_url, folder_path, name)
                         
+                img_options = flex_wrap_div.find_all('img') 
+                option_img_count = 1
+                if img_options:
+                    for img_option in img_options:
+                        img_url = urljoin(url, img_option['src'])
+                        option_name = chr(ord('A') + i)
+                        name = f'q{question_counter}_option{option_name}_{option_img_count}.png' 
+                        folder_path = os.path.join('./static/assets/images/background', img_type_directory["option"])
+            
+                        placeholder = f'<img src="/static/assets/images/background/Option/{name}" alt="{name}" style="display: inline-block; width: auto; height: auto;">'
+                        flex_wrap_div = BeautifulSoup(flex_wrap_div.decode().replace(str(img_option), placeholder), 'html.parser')
+            
+                        download_image(img_url, folder_path, name)
+                        option_img_count += 1
+            
                 option_text = flex_wrap_div.decode_contents().strip()
 
                 # Logic for handling <span class="root"></span>
