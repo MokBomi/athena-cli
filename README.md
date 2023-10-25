@@ -17,7 +17,7 @@ Visit the [Docker website](https://www.docker.com/get-docker/) and follow the gu
 After installing Docker, execute the following commands in your terminal:
 
 ```bash
-git clone <repository_URL>
+git clone https://github.com/MokBomi/athena-docker.git
 cd athena-docker
 docker build -t quiz-app .
 docker run -p 8000:8000 quiz-app
