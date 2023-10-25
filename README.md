@@ -13,7 +13,7 @@ Please be aware that athena-cli might encounter compatibility issues on certain 
 First, clone the repository and navigate to the project directory:
 
 ```bash
-git clone <repository_URL>
+git clone https://github.com/MokBomi/athena-cli.git
 cd athena-cli
 ```
 
