@@ -115,6 +115,9 @@ headers_list = [
 # Function to process a question from a given URL
 def process_question(base_url, url_number, question_counter):
     global question_data
+    # Check if URL starts with https://
+    if not base_url.startswith('https://'):
+        base_url = 'https://' + base_url
     url = base_url + str(url_number).zfill(6)
     MAX_RETRIES = 10
     backoff_time = 3  
@@ -146,6 +149,13 @@ def process_question(base_url, url_number, question_counter):
             q_text_elem = question.find('div', class_='bix-td-qtxt')
             options_elems = question.find_all('div', class_='bix-td-option-val')
             answer_elem = question.find('input', class_='jq-hdnakq')
+
+            # Extract explanation and discussion link
+            explanation_elem = question.find('div', class_='bix-ans-description')
+            discussion_link_elem = question.find('a', class_='discuss')
+
+            explanation = str(explanation_elem).strip() if explanation_elem else 'Explanation not found.'
+            discussion_link = discussion_link_elem['href'] if discussion_link_elem else 'Discussion link not found.'
 
             # Extract question text, options, and answer
             question_text = str(q_text_elem).strip() if q_text_elem else 'Question not found.'
@@ -183,25 +193,43 @@ def process_question(base_url, url_number, question_counter):
                 download_image(img_url, folder_path, name)  
                 img_count[name_type] = img_count[name_type] + 1
 
+            # Downloading explanation images
+            img_elems = explanation_elem.find_all('img')
+
+            for img_elem in img_elems:
+                img_url = urljoin(url, img_elem['src'])
+                name = f'q{question_counter}_explanation_{img_count.get("explanation", 1)}.png'
+                folder_path = os.path.join('./static/assets/images/background/Explanation')  
+                os.makedirs(folder_path, exist_ok=True)
+
+                placeholder = f'(image)q{question_counter}_explanation_{img_count.get("explanation", 1)}(image)'
+                explanation = explanation.replace(str(img_elem), placeholder)
+                
+                download_image(img_url, folder_path, name)
+                img_count["explanation"] = img_count.get("explanation", 1) + 1  
+
             options = []
             for i, option_elem in enumerate(options_elems):
                 flex_wrap_div = option_elem.find('div', class_='flex-wrap') 
                 if not flex_wrap_div:
                     options.append('Option not found')
                     continue
-                            
-                img_option = flex_wrap_div.find('img')
-                if img_option:
-                    img_url = urljoin(url, img_option['src'])
-                    option_name = chr(ord('A') + i)
-                    name = f'q{question_counter}_option{option_name}_1.png'
-                    folder_path = os.path.join('./static/assets/images/background', img_type_directory["option"])
-                                
-                    placeholder = f'<img src="/static/assets/images/background/Option/{name}" alt="{name}" style="display: inline-block; width: auto; height: auto;">'
-                    flex_wrap_div = BeautifulSoup(flex_wrap_div.decode().replace(str(img_option), placeholder), 'html.parser')
-
-                    download_image(img_url, folder_path, name)
                         
+                img_options = flex_wrap_div.find_all('img')  
+                option_img_count = 1  
+                if img_options:
+                    for img_option in img_options:  
+                        img_url = urljoin(url, img_option['src'])
+                        option_name = chr(ord('A') + i)
+                        name = f'q{question_counter}_option{option_name}_{option_img_count}.png' 
+                        folder_path = os.path.join('./static/assets/images/background', img_type_directory["option"])
+
+                        placeholder = f'<img src="/static/assets/images/background/Option/{name}" alt="{name}" style="display: inline-block; width: auto; height: auto;">'
+                        flex_wrap_div = BeautifulSoup(flex_wrap_div.decode().replace(str(img_option), placeholder), 'html.parser')
+
+                        download_image(img_url, folder_path, name)
+                        option_img_count += 1  # update the count
+
                 option_text = flex_wrap_div.decode_contents().strip()
 
                 # Logic for handling <span class="root"></span>
@@ -212,12 +240,22 @@ def process_question(base_url, url_number, question_counter):
                 options.append(option_text)
 
             # Append the processed question to the question_data list
-            question_data.append({'question': question_text, 'options': options, 'answer': answer})
+            question_data.append({
+                'question': question_text, 
+                'options': options, 
+                'answer': answer, 
+                'url': url, 
+                'explanation': explanation, 
+                'discussion_link': discussion_link
+            })
 
             # Print the question and its details for verification
             print(f"\nQuestion No. {question_counter}: {question_text}")
             print("Options: \n{}".format('\n'.join(options)))
-            print(answer)
+            print(f"Answer: {answer}")
+            print(f"URL: {url}")
+            print(f"Explanation: {explanation}")
+            print(f"Discussion Link: {discussion_link}")
             question_counter += 1
 
         except Exception as e:

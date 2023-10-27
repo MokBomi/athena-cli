@@ -327,10 +327,6 @@ input[type="radio"] {
     height: 35px;
 }
 
-#back-button:active, #star-button:active, #shuffle-button:active {
-    transform: scale(0.9);
-}
-
 .study-header {
     display: flex;
     justify-content: center;
@@ -592,4 +588,55 @@ input[type="radio"] {
 
 .underline-on-hover:hover {
     color: #b54a81;
+}
+
+.effect-on-hover {
+    transition: color 0.5s;
+}
+
+.effect-on-hover:hover {
+    color: #b54a81;
+}
+
+#additional-info-container {
+    padding: 20px;
+}
+
+#additional-info-section {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    font-family: 'Fira Code';
+}
+
+.text-spartan {
+    font-family: 'Spartan';
+    font-weight: 800;
+    color: #1d1f21;
+    font-size:1.0rem;
+    padding:10px 0;
+}
+ 
+.url-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+.explanation-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#url-link, #explanation-text {
+    font-family: 'Fira Code';
+    font-weight: 400;
+}
+
+#explanation-text {
+    margin-top: 0; 
 }

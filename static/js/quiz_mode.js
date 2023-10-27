@@ -99,8 +99,18 @@ document.addEventListener('keydown', function(event) {
                 goButton.click();
                 break;
             case 'Space':
-                flipCardButton.click();
-                event.preventDefault(); 
+                if(flipCardButton.classList.contains('is-flipping')) {
+                    flipCardButton.classList.remove('is-flipping');
+                    flipCardButton.classList.add('flip-card-front-hover');
+                    flipCardButton.classList.remove('flip-card-back-hover');
+                    toggleAdditionalInfo();
+                } else {
+                    flipCardButton.classList.add('is-flipping');
+                    flipCardButton.classList.add('flip-card-back-hover');
+                    flipCardButton.classList.remove('flip-card-front-hover');
+                    toggleAdditionalInfo();
+                }
+                event.preventDefault();
                 break;
             default:
                 return; 
@@ -157,6 +167,20 @@ function nextQuestion(event) {
     displayQuestion(currentQuestionIndex);
 }
 
+function toggleAdditionalInfo() {
+    const container = document.getElementById('additional-info-container');
+
+    if (container.style.display === "" || container.style.display === "none") {
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.querySelector("#additional-info-container").style.display = "none";
+});
+
 function displayQuestion(questionIndex, isFreshLoad = false) { 
     setTimeout(function () {
         if (!questions || questions.length === 0 || !questions[questionIndex]) {
@@ -165,6 +189,14 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
 
         let question = questions[questionIndex];
         let questionTextElement = document.getElementById("question-text");
+
+        document.getElementById('url-link').textContent = `${question.url}`;
+        document.getElementById('url-link').style.fontFamily = "Fira Code";
+        document.getElementById('url-link').style.fontWeight = "400";
+        document.getElementById('url-link').href = question.url;
+        document.getElementById('explanation-title-text').textContent = 'Explanation:';
+        document.getElementById('explanation-text').textContent = question.explanation;
+        document.getElementById('discussion-link').href = question.discussion_link;
 
         let questionText = question.question.replace('\n', '<br/>');
 
@@ -183,6 +215,13 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
         questionTextElement.innerHTML = questionText;
         document.getElementById("question-nav").value = questionIndex + 1;
 
+        let explanationImagePattern = /\(image\)q(\d+)_explanation_(\d+)\(image\)/gi;
+        let explanation = question.explanation.replace(explanationImagePattern, (match, p1, p2) => {  
+            let imageName = `q${p1}_explanation_${p2}.png`;
+            return `<img src="/static/assets/images/background/Explanation/${imageName}" alt="${imageName}" style="display: inline-block; width: auto; height: auto;">`;
+        });
+        document.getElementById('explanation-text').innerHTML = explanation;
+
         for (let i = 1; i <= 4; i++) {
             let optionText = question.options[i-1] || '';
             optionText = optionText.replace(/<div class="flex-wrap">|<\/div>/g, '');
@@ -195,6 +234,8 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
         document.getElementById("correct-answer-card").textContent = question.answer;
 
         document.getElementById('flip-card').classList.remove('is-flipping');
+
+        document.querySelector("#additional-info-container").style.display = "none";
 
         let starButton = document.getElementById("star-button");
         if (favoriteQuestions.findIndex(question => question.id.toString() === questions[questionIndex].id.toString()) >= 0) {  
