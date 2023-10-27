@@ -108,7 +108,7 @@ document.addEventListener('keydown', function(event) {
                     toggleAdditionalInfo();
                 }
                 event.preventDefault();
-                break;
+                break;                
             default:
                 return; 
         }
@@ -130,7 +130,7 @@ function goToQuestionGo(event) {
        allQuestsIndexCache = questionNumber - 1;
        favsIndexCache = findQuestionIndex(questions[questionNumber - 1].id);
        currentQuestionIndex = (currentDropdownView === 'All Questions') ? allQuestsIndexCache : favsIndexCache;
-       displayQuestion(currentQuestionIndex);       
+       displayQuestion(currentQuestionIndex);
    }
 }
 
@@ -187,6 +187,7 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
         let question = questions[questionIndex];
         let questionTextElement = document.getElementById("question-text");
 
+        // update additional info section
         document.getElementById('url-link').textContent = `${question.url}`;
         document.getElementById('url-link').style.fontFamily = "Fira Code";
         document.getElementById('url-link').style.fontWeight = "400";
@@ -217,12 +218,13 @@ function displayQuestion(questionIndex, isFreshLoad = false) {
             let imageName = `q${p1}_explanation_${p2}.png`;
             return `<img src="/static/assets/images/background/Explanation/${imageName}" alt="${imageName}" style="display: inline-block; width: auto; height: auto;">`;
         });
-        document.getElementById('explanation-text').innerHTML = explanation;
-
+        document.getElementById('explanation-text').innerHTML = explanation; 
+        
         for (let i = 1; i <= 4; i++) {
             let optionText = question.options[i-1] || '';
             optionText = optionText.replace(/<div class="flex-wrap">|<\/div>/g, '');
 
+            // New code to replace multiple image placeholders
             let optionImgPattern = new RegExp('<img src="\\/static\\/assets\\/images\\/background\\/Option\\/q' + (questionIndex + 1) + '_option' + String.fromCharCode(64 + i) + '_(\\d+).png" alt="q' + (questionIndex + 1) + '_option' + String.fromCharCode(64 + i) + '_\\d+.png" style="display: inline-block; width: auto; height: auto;">', 'gi');
             optionText = optionText.replace(optionImgPattern, (match, p1) => {
                 let imageName = 'q' + (questionIndex + 1) + '_option' + String.fromCharCode(64 + i) + '_' + p1 + '.png';
@@ -526,8 +528,6 @@ function closeResetQuestionsModal() {
 }
 
 function resetQuestions() {
-    score = 0;
-    document.getElementById('score').innerText = 0; 
     userChoices = {};
     if (selectedOption) {
         document.getElementById(`option${selectedOption}`).classList.remove('selected');

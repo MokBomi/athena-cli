@@ -199,14 +199,14 @@ def process_question(base_url, url_number, question_counter):
             for img_elem in img_elems:
                 img_url = urljoin(url, img_elem['src'])
                 name = f'q{question_counter}_explanation_{img_count.get("explanation", 1)}.png'
-                folder_path = os.path.join('./static/assets/images/background/Explanation')  
+                folder_path = os.path.join('./static/assets/images/background/Explanation')  # Creating Explanation folder
                 os.makedirs(folder_path, exist_ok=True)
 
                 placeholder = f'(image)q{question_counter}_explanation_{img_count.get("explanation", 1)}(image)'
                 explanation = explanation.replace(str(img_elem), placeholder)
                 
                 download_image(img_url, folder_path, name)
-                img_count["explanation"] = img_count.get("explanation", 1) + 1  
+                img_count["explanation"] = img_count.get("explanation", 1) + 1  # Increasing the count for the next image
 
             options = []
             for i, option_elem in enumerate(options_elems):
@@ -215,10 +215,10 @@ def process_question(base_url, url_number, question_counter):
                     options.append('Option not found')
                     continue
                         
-                img_options = flex_wrap_div.find_all('img')  
-                option_img_count = 1  
+                img_options = flex_wrap_div.find_all('img')  # changed this to find_all
+                option_img_count = 1  # new image count variable for options
                 if img_options:
-                    for img_option in img_options:  
+                    for img_option in img_options:  # process each img_option in a loop
                         img_url = urljoin(url, img_option['src'])
                         option_name = chr(ord('A') + i)
                         name = f'q{question_counter}_option{option_name}_{option_img_count}.png' 
