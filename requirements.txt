@@ -2,5 +2,5 @@ beautifulsoup4==4.10.0
 Flask==2.2.5
 Flask_Cors==3.0.10
 Requests==2.31.0
-urllib3==1.26.16
+urllib3==1.26.18
 werkzeug==3.0.3
