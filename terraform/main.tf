@@ -96,6 +96,12 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
   ]
+
+  lifecycle {
+    ignore_changes = [
+      name
+    ]
+  }
 }
 
 resource "aws_ecs_task_definition" "main" {
@@ -129,6 +135,8 @@ resource "aws_lb" "main" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.main.id]
   subnets            = [aws_subnet.main_a.id, aws_subnet.main_b.id]
+
+  depends_on = [aws_internet_gateway.main]
 }
 
 resource "aws_lb_target_group" "main" {
