@@ -1,3 +1,3 @@
 output "service_url" {
-  value = aws_ecs_service.main.name
+  value = aws_lb.main.dns_name
 }

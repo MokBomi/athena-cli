@@ -68,7 +68,7 @@ resource "aws_ecr_repository" "athena" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
+  name = "ecsTaskExecutionRole_${terraform.workspace}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -123,4 +123,50 @@ resource "aws_ecs_service" "main" {
     subnets         = [aws_subnet.main.id]
     security_groups = [aws_security_group.main.id]
   }
+}
+
+resource "aws_lb" "main" {
+  name               = "athena-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.main.id]
+  subnets            = [aws_subnet.main.id]
+}
+
+resource "aws_lb_target_group" "main" {
+  name     = "athena-tg"
+  port     = 8000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+}
+
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main.arn
+  }
+}
+
+resource "aws_ecs_service" "main" {
+  name            = "athena-service"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.main.arn
+  desired_count   = 1
+
+  network_configuration {
+    subnets         = [aws_subnet.main.id]
+    security_groups = [aws_security_group.main.id]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.main.arn
+    container_name   = "athena"
+    container_port   = 8000
+  }
+
+  depends_on = [aws_lb_listener.http]
 }
