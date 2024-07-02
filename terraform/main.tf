@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "my-terraform-state-bucket-rsduran-20240702" # Replace with your unique bucket name
+    bucket = "my-terraform-state-bucket-rsduran-20240702"
     key    = "terraform/state"
     region = "ap-southeast-2"
   }
@@ -77,7 +77,13 @@ resource "aws_ecr_repository" "athena" {
   name = "athena"
 }
 
+data "aws_iam_role" "existing_ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+}
+
 resource "aws_iam_role" "ecs_task_execution_role" {
+  count = length(data.aws_iam_role.existing_ecs_task_execution_role.id) == 0 ? 1 : 0
+
   name = "ecsTaskExecutionRole"
 
   assume_role_policy = jsonencode({
@@ -96,12 +102,6 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
   ]
-
-  lifecycle {
-    ignore_changes = [
-      name
-    ]
-  }
 }
 
 resource "aws_ecs_task_definition" "main" {
@@ -126,7 +126,7 @@ resource "aws_ecs_task_definition" "main" {
     }
   ])
 
-  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn = coalesce(data.aws_iam_role.existing_ecs_task_execution_role.arn, aws_iam_role.ecs_task_execution_role.arn)
 }
 
 resource "aws_lb" "main" {
