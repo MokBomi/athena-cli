@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "my-terraform-state-bucket-rsduran-20240702" # Replace with your unique bucket name
+    bucket = "my-terraform-state-bucket-rsduran-20240702" 
     key    = "terraform/state"
     region = "ap-southeast-2"
   }
@@ -100,40 +100,15 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 
   managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
   ]
-}
-
-resource "aws_iam_role" "ecs_instance_role" {
-  name = "ecs-instance-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      },
-    ]
-  })
-
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-  ]
-}
-
-resource "aws_iam_instance_profile" "ecs_instance_profile" {
-  name = "ecs-instance-profile"
-  role = aws_iam_role.ecs_instance_role.name
 }
 
 resource "aws_ecs_task_definition" "main" {
   family                   = "athena-task"
   network_mode             = "awsvpc"
-  requires_compatibilities = ["EC2"]
+  requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
 
@@ -148,24 +123,19 @@ resource "aws_ecs_task_definition" "main" {
           hostPort      = 8000
           protocol      = "tcp"
         }
-      ],
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/athena"
-          "awslogs-region"        = "ap-southeast-2"
-          "awslogs-stream-prefix" = "ecs"
+          awslogs-group         = "/ecs/athena"
+          awslogs-region        = "ap-southeast-2"
+          awslogs-stream-prefix = "ecs"
         }
       }
     }
   ])
 
   execution_role_arn = length(data.aws_iam_role.existing_ecs_task_execution_role.name) == 0 ? aws_iam_role.ecs_task_execution_role[0].arn : data.aws_iam_role.existing_ecs_task_execution_role.arn
-}
-
-resource "aws_cloudwatch_log_group" "ecs" {
-  name              = "/ecs/athena"
-  retention_in_days = 7
 }
 
 resource "aws_lb" "main" {
@@ -205,8 +175,6 @@ resource "aws_ecs_service" "main" {
   task_definition = aws_ecs_task_definition.main.arn
   desired_count   = 1
 
-  launch_type = "EC2"
-
   network_configuration {
     subnets         = [aws_subnet.main_a.id, aws_subnet.main_b.id]
     security_groups = [aws_security_group.main.id]
@@ -231,13 +199,39 @@ data "aws_ami" "ecs_optimized" {
   owners = ["amazon"]
 }
 
+resource "aws_iam_instance_profile" "ecs_instance_profile" {
+  name = "ecs-instance-profile"
+  role = aws_iam_role.ecs_instance_role.name
+}
+
+resource "aws_iam_role" "ecs_instance_role" {
+  name = "ecs-instance-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      },
+    ]
+  })
+
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+  ]
+}
+
 resource "aws_instance" "ecs_instance" {
   ami                    = data.aws_ami.ecs_optimized.id
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.main_a.id
-  iam_instance_profile   = aws_iam_instance_profile.ecs_instance_profile.name
-  associate_public_ip_address = true
   security_groups        = [aws_security_group.main.id]
+  associate_public_ip_address = true
+  iam_instance_profile   = aws_iam_instance_profile.ecs_instance_profile.name
 
   user_data = <<-EOF
               #!/bin/bash
