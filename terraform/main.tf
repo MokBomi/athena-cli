@@ -153,8 +153,8 @@ resource "aws_ecs_task_definition" "main" {
   family                   = "athena-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = "512"
+  memory                   = "1024"
 
   container_definitions = jsonencode([
     {
@@ -167,7 +167,15 @@ resource "aws_ecs_task_definition" "main" {
           hostPort      = 8000
           protocol      = "tcp"
         }
-      ]
+      ],
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"        = "/ecs/athena"
+          "awslogs-region"       = "ap-southeast-2"
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ])
 
