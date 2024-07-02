@@ -179,3 +179,35 @@ resource "aws_ecs_service" "main" {
 
   depends_on = [aws_lb.main, aws_lb_listener.main]
 }
+
+data "aws_ami" "ecs_optimized" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-ecs-hvm-*-x86_64-ebs"]
+  }
+
+  owners = ["amazon"]
+}
+
+resource "aws_instance" "ecs_instance" {
+  ami           = data.aws_ami.ecs_optimized.id
+  instance_type = "t2.micro"
+  count         = 1
+
+  network_interface {
+    device_index           = 0
+    subnet_id              = aws_subnet.main_a.id
+    security_groups        = [aws_security_group.main.id]
+    associate_public_ip_address = true
+  }
+
+  user_data = <<-EOF
+              #!/bin/bash
+              echo ECS_CLUSTER=${aws_ecs_cluster.main.name} >> /etc/ecs/ecs.config
+              EOF
+
+  tags = {
+    Name = "ecs-instance"
+  }
+}
