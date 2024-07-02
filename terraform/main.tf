@@ -113,18 +113,6 @@ resource "aws_ecs_task_definition" "main" {
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 }
 
-resource "aws_ecs_service" "main" {
-  name            = "athena-service"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.main.arn
-  desired_count   = 1
-
-  network_configuration {
-    subnets         = [aws_subnet.main.id]
-    security_groups = [aws_security_group.main.id]
-  }
-}
-
 resource "aws_lb" "main" {
   name               = "athena-lb"
   internal           = false
