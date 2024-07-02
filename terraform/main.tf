@@ -149,6 +149,11 @@ resource "aws_instance" "ecs_instance" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name              = "/ecs/athena"
+  retention_in_days = 7
+}
+
 resource "aws_ecs_task_definition" "main" {
   family                   = "athena-task"
   network_mode             = "awsvpc"
