@@ -140,10 +140,11 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "main" {
-  name     = "athena-tg"
-  port     = 8000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  name       = "athena-tg"
+  port       = 8000
+  protocol   = "HTTP"
+  target_type = "ip"
+  vpc_id     = aws_vpc.main.id
 }
 
 resource "aws_ecs_service" "main" {
