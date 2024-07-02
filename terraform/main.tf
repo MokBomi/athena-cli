@@ -14,6 +14,10 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
 
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+}
+
 resource "aws_subnet" "main_a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.1.0/24"
@@ -74,7 +78,7 @@ resource "aws_ecr_repository" "athena" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole_${terraform.workspace}"
+  name = "ecsTaskExecutionRole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -134,17 +138,6 @@ resource "aws_lb_target_group" "main" {
   vpc_id   = aws_vpc.main.id
 }
 
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.main.arn
-  }
-}
-
 resource "aws_ecs_service" "main" {
   name            = "athena-service"
   cluster         = aws_ecs_cluster.main.id
@@ -162,5 +155,5 @@ resource "aws_ecs_service" "main" {
     container_port   = 8000
   }
 
-  depends_on = [aws_lb_listener.http]
+  depends_on = [aws_lb.main, aws_lb_target_group.main]
 }
