@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "my-terraform-state-bucket-rsduran-20240702" 
+    bucket = "my-terraform-state-bucket-rsduran-20240702" # Replace with your unique bucket name
     key    = "terraform/state"
     region = "ap-southeast-2"
   }
@@ -75,6 +75,11 @@ resource "aws_ecs_cluster" "main" {
 
 resource "aws_ecr_repository" "athena" {
   name = "athena"
+}
+
+resource "aws_cloudwatch_log_group" "ecs_athena" {
+  name              = "/ecs/athena"
+  retention_in_days = 7
 }
 
 data "aws_iam_role" "existing_ecs_task_execution_role" {
