@@ -191,16 +191,11 @@ data "aws_ami" "ecs_optimized" {
 }
 
 resource "aws_instance" "ecs_instance" {
-  ami           = data.aws_ami.ecs_optimized.id
-  instance_type = "t2.micro"
-  count         = 1
-
-  network_interface {
-    device_index           = 0
-    subnet_id              = aws_subnet.main_a.id
-    security_groups        = [aws_security_group.main.id]
-    associate_public_ip_address = true
-  }
+  ami                    = data.aws_ami.ecs_optimized.id
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.main_a.id
+  security_groups        = [aws_security_group.main.id]
+  associate_public_ip_address = true
 
   user_data = <<-EOF
               #!/bin/bash
