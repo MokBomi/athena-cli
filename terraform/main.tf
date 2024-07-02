@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "my-terraform-state-bucket-rsduran-20240702"
+    bucket = "my-terraform-state-bucket-rsduran-20240702" # Replace with your unique bucket name
     key    = "terraform/state"
     region = "ap-southeast-2"
   }
@@ -126,7 +126,10 @@ resource "aws_ecs_task_definition" "main" {
     }
   ])
 
-  execution_role_arn = coalesce(data.aws_iam_role.existing_ecs_task_execution_role.arn, aws_iam_role.ecs_task_execution_role.arn)
+  execution_role_arn = coalesce(
+    data.aws_iam_role.existing_ecs_task_execution_role.arn,
+    aws_iam_role.ecs_task_execution_role[0].arn
+  )
 }
 
 resource "aws_lb" "main" {
